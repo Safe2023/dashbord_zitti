@@ -131,7 +131,7 @@
     
     <div>
         
-        <p>© <script>document.write(new Date().getFullYear())</script> Dr. Justin  DONGBEHOUNDE</p>
+        <p>© <script>document.write(new Date().getFullYear())</script><!--  Dr. Justin  DONGBEHOUNDE --></p>
     </div>
 </div>
 @endsection

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Commande;
 use App\Models\User;
 use App\Models\Zone;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class CommandeController extends Controller
@@ -68,11 +69,11 @@ class CommandeController extends Controller
         return back()->with('success', 'Statut mis à jour avec succès.');
     }
 
-   public function commandesParStatut($statut)
-{
-    $commandes = Commande::where('statut', $statut)->get();
-    return view('commande.liste', compact('commandes', 'statut'));
-}
+    public function commandesParStatut($statut)
+    {
+        $commandes = Commande::where('statut', $statut)->get();
+        return view('commande.liste', compact('commandes', 'statut'));
+    }
 
 
     /**
@@ -143,6 +144,35 @@ class CommandeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+
+    public function filter(Request $request)
+    {
+        $query = Commande::query();
+
+    if ($request->filled('adresse_desti')) {
+        $query->where('adresse_desti', 'like', '%' . $request->adresse_desti . '%');
+    }
+
+    if ($request->filled('date_debut') && $request->filled('date_fin')) {
+        $query->whereBetween('created_at', [
+            Carbon::parse($request->date_debut)->startOfDay(),
+            Carbon::parse($request->date_fin)->endOfDay()
+        ]);
+    } elseif ($request->filled('date_debut')) {
+        $query->where('created_at', '>=', Carbon::parse($request->date_debut)->startOfDay());
+    } elseif ($request->filled('date_fin')) {
+        $query->where('created_at', '<=', Carbon::parse($request->date_fin)->endOfDay());
+    }
+
+    $commandes = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+
+    return view('commande_table', compact('commandes'));
+    }
+
+
+
+
+
     public function destroys($id)
     {
         $commande = Commande::findOrFail($id);

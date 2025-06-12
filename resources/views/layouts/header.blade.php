@@ -58,7 +58,7 @@
             Nav header start
         ***********************************-->
         <div class="nav-header">
-            <a href="index.html" class="brand-logo">
+            <a href="{{ route('home') }}" class="brand-logo">
                 <img class="logo-abbr" src="{{ asset('images/dashbord/zitti.png') }}" alt="">
               <!--   <img class="logo-compact" src=" {{ asset('images/logo-text.png') }} " alt="">
                 <img class="brand-title" src=" {{ asset('images/logo-text.png') }} " alt=""> -->
@@ -186,12 +186,12 @@
                             <li class="nav-item dropdown header-profile">
                                 <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
                                     <div class="header-info">
-                                        <span>Hello, <strong>Samuel</strong></span>
+                                        <span>Hello, <strong>{{Auth::user()->lastName}}</strong></span>
                                     </div>
-                                    <img src="images/profile/pic1.jpg" width="20" alt="">
+                                    <img src="{{ asset('upload/users/' . Auth::user()->photo_profil) }}" width="20" alt="">
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <a href="app-profile.html" class="dropdown-item ai-icon">
+                                    <a href="{{ route('profile') }}" class="dropdown-item ai-icon">
                                         <svg id="icon-user1" xmlns="http://www.w3.org/2000/svg" class="text-primary" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                             <circle cx="12" cy="7" r="4"></circle>
@@ -210,7 +210,7 @@
                                             <polyline points="16 17 21 12 16 7"></polyline>
                                             <line x1="21" y1="12" x2="9" y2="12"></line>
                                         </svg>
-                                        <span class="ms-2">Logout </span>
+                                        <span class="ms-2">Déconnexion </span>
                                     </a>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf

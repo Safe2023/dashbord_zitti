@@ -84,7 +84,7 @@
                     <p class="mt-2">Pas de compte ?
                         <a href="{{ route('register') }}" class="fw-medium text-primary">Créer maintenant</a>
                     </p>
-                    <p class="mt-1">© <script>document.write(new Date().getFullYear())</script> ACCES UNIVERSEL</p>
+                    <p class="mt-1">© <script>document.write(new Date().getFullYear())</script> MESSAGER EXPRESS</p>
                 </div>
             </form>
         </div>
