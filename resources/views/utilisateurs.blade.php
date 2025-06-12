@@ -1,48 +1,78 @@
 @extends('layouts.header')
 @section('content')
 
-<!-- <div class="container mt-5">
-    <h2 class="mb-4 text-center">Gestion des utilisateurs</h2>
-
-   
-    
-
-</div> -->
-
-
-
-
 <div class="container-fluid">
-    <!-- Breadcrumb -->
+
     <div class="row">
+
+        <div class="form-head d-flex mb-3 align-items-start">
+            <div class="me-auto d-none d-lg-block">
+                <h2 class="text-primary font-w600 mb-0">Tableau de bord</h2>
+                <p class="mb-0">Bienvenue <strong>{{Auth::user()->lastName}} <strong>{{Auth::user()->firstName}}</strong></span></strong></span></p>
+            </div>
+            @php
+            use Carbon\Carbon;
+            $now = Carbon::now()->locale('fr_FR');
+            @endphp
+
+            <div class="dropdown custom-dropdown">
+                <div class="btn btn-sm btn-primary light d-flex align-items-center svg-btn" data-bs-toggle="dropdown">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                            <path d="M22.4281 2.856H21.8681V1.428C21.8681 0.56 21.2801 0 20.4401 0C19.6001 0 19.0121 0.56 19.0121 1.428V2.856H9.71606V1.428C9.71606 0.56 9.15606 0 8.28806 0C7.42006 0 6.86006 0.56 6.86006 1.428V2.856H5.57206C2.85606 2.856 0.560059 5.152 0.560059 7.868V23.016C0.560059 25.732 2.85606 28.028 5.57206 28.028H22.4281C25.1441 28.028 27.4401 25.732 27.4401 23.016V7.868C27.4401 5.152 25.1441 2.856 22.4281 2.856ZM5.57206 5.712H22.4281C23.5761 5.712 24.5841 6.72 24.5841 7.868V9.856H3.41606V7.868C3.41606 6.72 4.42406 5.712 5.57206 5.712ZM22.4281 25.144H5.57206C4.42406 25.144 3.41606 24.136 3.41606 22.988V12.712H24.5561V22.988C24.5841 24.136 23.5761 25.144 22.4281 25.144Z" fill="#2F4CDD" />
+                        </g>
+                    </svg>
+                    <div class="text-start ms-3">
+                        <span class="d-block fs-16">Aujourd'hui</span>
+                        <small class="d-block fs-13">
+                            {{ $now->translatedFormat('d F Y') }} - {{ $now->format('H:i') }}
+                        </small>
+                    </div>
+                    <i class="fa fa-angle-down scale5 ms-3"></i>
+                </div>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="#">Rafraîchir</a>
+                </div>
+            </div>
+
+        </div>
+
+
         <div class="col-md-12">
-            <div class="filter cm-content-box box-primary mb-4">
+            <div class="filter cm-content-box box-primary mb-4 ">
                 <div class="content-title d-flex justify-content-between align-items-center">
                     <div class="cpa"><i class="fa-solid fa-filter me-2"></i>Filtrer</div>
                     <div class="tools">
                         <a href="javascript:void(0);" class="expand SlideToolHeader"><i class="fal fa-angle-down"></i></a>
                     </div>
                 </div>
-                <div class="cm-content-body form excerpt">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-xl-3 col-sm-6 mb-3">
-                                <input type="text" class="form-control" placeholder="Titre">
-                            </div>
-                            <!--  <div class="col-xl-3 col-sm-6 mb-3">
-                                <select class="form-select">
-                                    <option value="1"> <a href=""></a>En attente </option>
-                                    <option value="2">En cours</option>
-                                    <option value="3">Treminer</option>
-                                    <option value="4">Annuler</option>
-                                  
-                                </select>
-                            </div>
-                            -->
-                        </div>
+                <form method="GET" action="{{ route('utilisateurs') }}" class="row g-2 mb-3">
+                    <div class="col-md-4 mb-4">
+                        <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="Rechercher nom, prénom ou email">
                     </div>
-                </div>
+
+                    <div class="col-md-3 mb-4">
+                        <select name="sort" class="form-select">
+                            <option value="created_at" {{ request('sort') == 'created_at' ? 'selected' : '' }}>Date de création</option>
+                            <option value="lastName" {{ request('sort') == 'lastName' ? 'selected' : '' }}>Nom</option>
+                            <option value="email" {{ request('sort') == 'email' ? 'selected' : '' }}>Email</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-4">
+                        <select name="direction" class="form-select">
+                            <option value="asc" {{ request('direction') == 'asc' ? 'selected' : '' }}>Croissant</option>
+                            <option value="desc" {{ request('direction') == 'desc' ? 'selected' : '' }}>Décroissant</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 mb-4">
+                        <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+                    </div>
+                </form>
             </div>
+
+
             @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
             @endif
@@ -83,20 +113,26 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse ($users as $index => $user)
+                                    @if($users->isEmpty())
+                                    <tr>
+                                        <td colspan="12" class="text-center">Aucun utilisateur trouvé.</td>
+                                    </tr>
+                                    @else
+
+                                    @foreach ($users as $index => $user)
                                     <tr>
                                         <td><input type="checkbox" class="form-check-input"></td>
                                         <td>{{ $index + 1 }}</td>
                                         <td>
                                             @if ($user->photo_profil)
-                                            <img src="{{ asset('storage/' . $user->photo_profil) }}" alt="Photo de profil" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                            <img src="{{ asset('upload/users/' . $user->photo_profil) }}" alt="Photo de profil" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                             @else
                                             -
                                             @endif
                                         </td>
                                         <td>
                                             @if ($user->photo_cip)
-                                            <img src="{{ asset('storage/' . $user->photo_cip) }}" alt="Photo CIP" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                            <img src="{{ asset('upload/users/' . $user->photo_cip) }}" alt="Photo CIP" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                             @else
                                             -
                                             @endif
@@ -274,18 +310,21 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="12" class="text-center">Aucun utilisateur trouvé.</td>
-                                    </tr>
-                                    @endforelse
+
+                                    @endforeach
+                                    @endif
                                 </tbody>
                             </table>
+                            <div class="row mt-5 mb-5">
+                                <div class="col-md-12 d-flex justify-content-center">
+
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Pagination -->
 
                     </div>
+
                 </div>
             </div>
         </div>
